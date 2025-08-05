@@ -1,12 +1,11 @@
 {
-	"name": "netflix-clone",
+	"name": "movie_app_backend",
 	"version": "1.0.0",
 	"description": "",
 	"main": "backend/server.js",
 	"scripts": {
-		"dev": "nodemon backend/server.js",
-		"start": "nodemon",
-		"build": "npm install"
+		"dev": "NODE_ENV=development nodemon backend/server.js",
+		"prod": "NODE_ENV=production node backend/server.js"
 	},
 	"keywords": [],
 	"author": "",

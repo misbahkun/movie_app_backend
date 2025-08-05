@@ -1,21 +1,22 @@
 import { fetchFromTMDB } from "../services/tmdb.service.js";
 
-export async function getTrendingMovie(req, res) {
+export async function getTrendingMovie(_, res) {
 	try {
 		const data = await fetchFromTMDB("https://api.themoviedb.org/3/trending/movie/day?language=en-US");
 		const limited = data.results.slice(0, 5);
 		res.json({ success: true, content: limited });
 	} catch (error) {
+		console.error("Error fetching trending movies:", error);
 		res.status(500).json({ success: false, message: "Internal Server Error" });
 	}
 }
 
-export async function getNowPlayingMovies(req, res) {
+export async function getNowPlayingMovies(_, res) {
 	try {
 		const data = await fetchFromTMDB("https://api.themoviedb.org/3/movie/now_playing");
 		res.json({ success: true, content: data.results });
 	} catch (error) {
-		console.log(error);
+		console.error("Error fetching now playing movies:", error);
 		res.status(500).json({ success: false, message: "Internal Server Error" });
 	}
 }
@@ -27,6 +28,7 @@ export async function getMovieTrailer(req, res) {
 		res.json({ success: true, trailer: data.results[0] });
 	} catch (error) {
 		if (error.message.includes("404")) {
+			
 			return res.status(404).send(null);
 		}
 
