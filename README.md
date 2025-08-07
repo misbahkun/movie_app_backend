@@ -10,7 +10,6 @@ A robust backend service for a modern streaming platform built with Node.js, Exp
 - 📝 User Search History
 - 🔒 Protected Routes
 - 🌐 Proxy Support for Development
-- 🐳 Docker Support
 
 ## 🛠 Tech Stack
 
@@ -19,14 +18,12 @@ A robust backend service for a modern streaming platform built with Node.js, Exp
 - **Database:** MongoDB
 - **Authentication:** JWT (JSON Web Tokens)
 - **External API:** TMDB API
-- **Containerization:** Docker & Docker Compose
 - **Reverse Proxy:** Nginx
 
 ## 📋 Prerequisites
 
 - Node.js v18 or higher
 - MongoDB
-- Docker & Docker Compose (optional)
 - TMDB API Key
 
 ## 🚀 Quick Start
@@ -34,8 +31,8 @@ A robust backend service for a modern streaming platform built with Node.js, Exp
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/mahdinazmi/Backend-Netflix.git
-   cd Backend-Netflix
+   git clone https://github.com/mizzcode/movie_app_backend
+   cd movie_app_backend
    ```
 
 2. **Set up environment variables**
@@ -59,30 +56,6 @@ A robust backend service for a modern streaming platform built with Node.js, Exp
 
    The server will start at http://localhost:5000
 
-## 🐳 Docker Setup
-
-### Development
-
-```bash
-# Build and start containers
-docker-compose -f docker-compose.yml up --build
-
-# Stop containers
-docker-compose down
-```
-
-### Production
-
-```bash
-# Build and start containers
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
-
-# View logs
-docker-compose logs -f
-
-# Stop containers
-docker-compose down
-```
 
 ## 📁 Project Structure
 
@@ -105,7 +78,7 @@ Required environment variables:
 ```
 PORT=5000
 NODE_ENV=development
-MONGO_URI=mongodb://localhost:27017/netflix
+MONGO_URI=mongodb://localhost:27017/moviehub_backend
 JWT_SECRET=your_jwt_secret
 TMDB_API_KEY=your_tmdb_api_key
 ```
@@ -131,7 +104,6 @@ Detailed API documentation is available in [/docs/API.md](docs/API.md)
 
 ## 🚀 Production Features
 
-- Docker containerization
 - Nginx reverse proxy
 - Environment-based configurations
 - Static file serving
@@ -150,8 +122,6 @@ Detailed API documentation is available in [/docs/API.md](docs/API.md)
 
 - `npm run dev`: Start development server with nodemon
 - `npm run prod`: Start production server
-- `docker-compose up`: Start all services with Docker
-- `docker-compose down`: Stop all Docker services
 
 ## 🔐 Security Features
 
