@@ -1,5 +1,5 @@
 {
-	"name": "movie_app_backend",
+	"name": "moviehub-backend",
 	"version": "1.0.0",
 	"description": "",
 	"main": "backend/server.js",
