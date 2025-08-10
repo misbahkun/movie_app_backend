@@ -1,0 +1,87 @@
+# GitLab CI Configuration for Branch Workflow
+
+# Use Node.js 22 image
+image: node:22
+
+# Define pipeline stages
+stages:
+  - install
+  - test
+  - build
+
+# Cache node_modules untuk speed up builds
+cache:
+  paths:
+    - node_modules/
+
+# Variables
+variables:
+  NODE_ENV: test
+
+# Install dependencies (runs on all branches)
+install_dependencies:
+  stage: install
+  script:
+    - echo "Installing dependencies..."
+    - npm ci --cache .npm --prefer-offline
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1 hour
+  cache:
+    paths:
+      - .npm/
+
+# Run tests on merge requests to main
+test_merge_request:
+  stage: test
+  script:
+    - echo "Running tests for merge request..."
+    - npm test
+  dependencies:
+    - install_dependencies
+  coverage: '/Lines\s*:\s*(\d+\.\d+)%/'
+  artifacts:
+    reports:
+      junit: junit.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+    paths:
+      - coverage/
+    expire_in: 1 week
+  only:
+    - merge_requests
+    - dev/test # Also run on dev/test branch pushes
+
+# Build project (only on main branch)
+build_production:
+  stage: build
+  script:
+    - echo "Building production..."
+    - npm run build --if-present
+  dependencies:
+    - install_dependencies
+  artifacts:
+    paths:
+      - dist/
+      - build/
+    expire_in: 1 week
+  only:
+    - main
+
+# Deployment to production (on main branch)
+deploy_production:
+  stage: build
+  script:
+    - echo "Deploying to production environment..."
+    - npm run build --if-present
+    - echo "Deploy to production server here"
+  dependencies:
+    - install_dependencies
+  environment:
+    name: production
+    url: https://yourdomain.com
+  only:
+    - main
+  when: manual # Require manual trigger for production
