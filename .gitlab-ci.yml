@@ -38,7 +38,6 @@ test_job:
     - echo "Environment variables:"
     - echo "NODE_ENV: $NODE_ENV"
     - echo "MONGO_URI: $MONGO_URI"
-    - echo "JWT_SECRET: [HIDDEN]"
     - echo "Running tests..."
     - npm test
   artifacts:
