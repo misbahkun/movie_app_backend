@@ -98,7 +98,7 @@ build_and_deploy:
       # === PM2 (fork mode) ===
       SCRIPT_PATH="src/server.js"
       if command -v pm2 >/dev/null 2>&1; then
-        if pm2 list --json | grep -q "\"name\":\"$APP_NAME\""; then
+        if pm2 jlist | grep -q '"name":"api-movie-nodejs"'; then
           echo "PM2: $APP_NAME ada → reload"
           pm2 reload "$APP_NAME" --update-env || pm2 restart "$APP_NAME" --update-env
         else
