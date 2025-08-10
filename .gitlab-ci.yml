@@ -46,59 +46,53 @@ test_job:
 # Build job (only runs on main branch after merge)
 build_and_deploy:
   stage: build
+  variables:
+    NODE_ENV: production
+    SSH_PORT: '22'
   before_script:
     - echo "Installing dependencies..."
     - npm ci --cache .npm --prefer-offline
-    # Setup SSH
-    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
-    - eval $(ssh-agent -s)
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install -y openssh-client )'
+    - eval "$(ssh-agent -s)"
     - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan $VPS_HOST >> ~/.ssh/known_hosts
+    - mkdir -p ~/.ssh && chmod 700 ~/.ssh
+    - ssh-keyscan -p "${SSH_PORT}" "$VPS_HOST" >> ~/.ssh/known_hosts || true
     - chmod 644 ~/.ssh/known_hosts
+    # Sanity check: pastikan bisa auth pakai key
+    - ssh -p "${SSH_PORT}" -o BatchMode=yes -o PreferredAuthentications=publickey -T "$VPS_USER@$VPS_HOST" "echo OK \$(hostname)"
   script:
     - echo "Building application..."
     - npm run build --if-present || echo "No build script found, skipping..."
     - echo "Deploying to VPS..."
     - |
-      ssh $VPS_USER@$VPS_HOST << 'ENDSSH'
-        echo "=== Starting Deployment ==="
-        cd $VPS_PROJECT_PATH
-        
-        echo "=== Pulling latest changes ==="
-        git stash || echo "No local changes to stash"
-        git pull origin main
-        
-        echo "=== Installing dependencies ==="
-        npm ci --production
-        
-        echo "=== Building application ==="
-        npm run build --if-present || echo "No build script"
-        
-        echo "=== Restarting application ==="
-        if command -v pm2 &> /dev/null; then
-          pm2 restart api-movie-nodejs
-          pm2 save
-        else
-          echo "Please restart your application manually"
-        fi
-        
-        echo "=== Testing application ==="
-        sleep 5
-        curl -f http://localhost:5000/ || echo "please check manually"
-        
-        echo "=== Deployment completed successfully! ==="
+      ssh -p "${SSH_PORT}" -o StrictHostKeyChecking=yes -o BatchMode=yes -T "$VPS_USER@$VPS_HOST" \
+      "export PROJECT_PATH='$VPS_PROJECT_PATH' APP_NAME='api-movie-nodejs'; bash -s" << 'ENDSSH'
+      set -e
+      echo "=== Starting Deployment ==="
+      cd "$PROJECT_PATH"
+
+      echo "=== Update code ==="
+      git fetch --all --prune
+      git reset --hard origin/main
+
+      echo "=== Install deps (prod) ==="
+      npm ci --omit=dev
+
+      echo "=== Build (optional) ==="
+      npm run build --if-present || echo "No build script"
+
+      echo "=== Restart PM2 (fork mode) ==="
+      if command -v pm2 >/dev/null 2>&1; then
+        pm2 restart "$APP_NAME" --update-env || pm2 start src/server.js --name "$APP_NAME"
+        pm2 save
+      else
+        echo "PM2 not found, please restart manually"
+      fi
+
+      echo "=== Health check ==="
+      curl -fsS http://localhost:5000/ || echo "please check manually"
+      echo "=== Deployment completed successfully! ==="
       ENDSSH
-  artifacts:
-    paths:
-      - dist/
-      - build/
-    expire_in: 1 week
-  cache:
-    paths:
-      - .npm/
-      - node_modules/
   only:
     - main
   environment:
