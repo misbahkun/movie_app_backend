@@ -36,8 +36,6 @@ test_job:
     - npx mongodb-ping --host mongo --port 27017 || echo "MongoDB connection test completed"
   script:
     - echo "Environment variables:"
-    - echo "NODE_ENV: $NODE_ENV"
-    - echo "MONGO_URI: $MONGO_URI"
     - echo "Running tests..."
     - npm test
   artifacts:
