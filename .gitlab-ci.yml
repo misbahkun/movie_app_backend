@@ -114,6 +114,7 @@ build_and_deploy:
       fi
 
       echo "=== Deployment completed successfully! ==="
+      echo "=== URL PRODUCTION: https://api-movie.mizzcode.my.id ==="
       ENDSSH
   only:
     - main
