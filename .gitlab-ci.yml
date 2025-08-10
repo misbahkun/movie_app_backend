@@ -48,7 +48,7 @@ build_and_deploy:
   stage: build
   variables:
     NODE_ENV: production
-    SSH_PORT: '22'
+    NODE_VERSION: '22'
   before_script:
     - echo "Installing dependencies..."
     - npm ci --cache .npm --prefer-offline
@@ -74,6 +74,20 @@ build_and_deploy:
       echo "=== Update code ==="
       git fetch --all --prune
       git reset --hard origin/main
+
+      if ! command -v npm >/dev/null 2>&1; then
+        export NVM_DIR="$HOME/.nvm"
+        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+        [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+      fi
+      if command -v nvm >/dev/null 2>&1 && [ -n "$NODE_VERSION" ]; then
+        nvm install "$NODE_VERSION"
+        nvm use "$NODE_VERSION"
+      fi
+      if ! command -v npm >/dev/null 2>&1; then
+        echo "npm not found. Install Node.js on the server."; exit 1
+      fi
+      node -v; npm -v
 
       echo "=== Install deps (prod) ==="
       npm i --omit=dev
