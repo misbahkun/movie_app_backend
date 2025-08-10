@@ -84,7 +84,7 @@ describe('Auth Routes', () => {
       });
     expect(response.status).toBe(400);
     expect(response.body).toHaveProperty('success', false);
-    expect(response.body).toHaveProperty('message', 'Invalid credentials');
+    expect(response.body).toHaveProperty('message', 'Invalid Credentials');
   });
 
   test('POST /api/v1/auth/logout should log out the user and clear cookie', async () => {
