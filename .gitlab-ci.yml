@@ -42,17 +42,54 @@ test_job:
       - node_modules/
   only:
     - merge_requests
-    - dev/test
 
 # Build job (only runs on main branch after merge)
-build_job:
+build_and_deploy:
   stage: build
   before_script:
     - echo "Installing dependencies..."
     - npm ci --cache .npm --prefer-offline
+    # Setup SSH
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $VPS_HOST >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
   script:
     - echo "Building application..."
     - npm run build --if-present || echo "No build script found, skipping..."
+    - echo "Deploying to VPS..."
+    - |
+      ssh $VPS_USER@$VPS_HOST << 'ENDSSH'
+        echo "=== Starting Deployment ==="
+        cd $VPS_PROJECT_PATH
+        
+        echo "=== Pulling latest changes ==="
+        git stash || echo "No local changes to stash"
+        git pull origin main
+        
+        echo "=== Installing dependencies ==="
+        npm ci --production
+        
+        echo "=== Building application ==="
+        npm run build --if-present || echo "No build script"
+        
+        echo "=== Restarting application ==="
+        if command -v pm2 &> /dev/null; then
+          pm2 restart api-movie-nodejs
+          pm2 save
+        else
+          echo "Please restart your application manually"
+        fi
+        
+        echo "=== Testing application ==="
+        sleep 5
+        curl -f http://localhost:5000/ || echo "please check manually"
+        
+        echo "=== Deployment completed successfully! ==="
+      ENDSSH
   artifacts:
     paths:
       - dist/
@@ -64,3 +101,6 @@ build_job:
       - node_modules/
   only:
     - main
+  environment:
+    name: production
+    url: https://api-movie.mizzcode.my.id
