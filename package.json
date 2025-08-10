@@ -1,11 +1,11 @@
 {
-	"name": "moviehub-backend",
+	"name": "movie-app-backend",
 	"version": "1.0.0",
 	"description": "",
 	"main": "backend/server.js",
 	"scripts": {
-		"dev": "NODE_ENV=development nodemon backend/server.js",
-		"prod": "NODE_ENV=production node backend/server.js",
+		"dev": "NODE_ENV=development nodemon src/server.js",
+		"prod": "NODE_ENV=production node src/server.js",
 		"test": "NODE_OPTIONS=--experimental-vm-modules jest"
 	},
 	"keywords": [],
@@ -13,13 +13,16 @@
 	"type": "module",
 	"license": "ISC",
 	"dependencies": {
+		"@tailwindcss/cli": "^4.1.11",
 		"axios": "^1.7.2",
 		"bcryptjs": "^2.4.3",
 		"cookie-parser": "^1.4.6",
 		"dotenv": "^16.4.5",
+		"ejs": "^3.1.10",
 		"express": "^4.19.2",
 		"jsonwebtoken": "^9.0.2",
-		"mongoose": "^8.5.1"
+		"mongoose": "^8.5.1",
+		"tailwindcss": "^4.1.11"
 	},
 	"devDependencies": {
 		"@shelf/jest-mongodb": "^5.2.2",
