@@ -1,4 +1,5 @@
 # GitLab CI Configuration for Branch Workflow
+# File: .gitlab-ci.yml (letakkan di root repository)
 
 # Use Node.js 22 image
 image: node:22
@@ -20,10 +21,24 @@ variables:
 # Run tests on merge requests and dev/test branch
 test_job:
   stage: test
+  services:
+    - mongo:5.0
+  variables:
+    NODE_ENV: test
+    JWT_SECRET: test-jwt-secret-key-for-ci-testing-only
+    MONGO_URI: mongodb://mongo:27017/test_db
   before_script:
     - echo "Installing dependencies..."
     - npm ci --cache .npm --prefer-offline
+    - echo "Waiting for MongoDB to be ready..."
+    - sleep 10
+    - echo "Testing MongoDB connection..."
+    - npx mongodb-ping --host mongo --port 27017 || echo "MongoDB connection test completed"
   script:
+    - echo "Environment variables:"
+    - echo "NODE_ENV: $NODE_ENV"
+    - echo "MONGO_URI: $MONGO_URI"
+    - echo "JWT_SECRET: [HIDDEN]"
     - echo "Running tests..."
     - npm test
   artifacts:
