@@ -76,7 +76,7 @@ build_and_deploy:
       git reset --hard origin/main
 
       echo "=== Install deps (prod) ==="
-      npm ci --omit=dev
+      npm i --omit=dev
 
       echo "=== Build (optional) ==="
       npm run build --if-present || echo "No build script"
