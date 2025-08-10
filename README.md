@@ -121,7 +121,7 @@ Detailed API documentation is available in [/docs/API.md](docs/API.md)
 ## 📝 Scripts
 
 - `npm run dev`: Start development server with nodemon
-- `npm run prod`: Start production server
+- `npm run prod`: Start production server or using pm2 (recommended)
 
 ## 🔐 Security Features
 

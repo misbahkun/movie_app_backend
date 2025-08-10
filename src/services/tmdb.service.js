@@ -11,7 +11,7 @@ export const fetchFromTMDB = async (url) => {
 	const urlWithApiKey = `${url}${separator}api_key=${ENV_VARS.TMDB_API_KEY}`;
 
 	try {
-		if (ENV_VARS.NODE_ENV === 'development') {
+		if (ENV_VARS.NODE_ENV === 'development-proxy') {
 			// Development: Use curl command for proxy compatibility
 			const curlCommand = `curl -s -H "Accept: application/json" "${urlWithApiKey}"`;
 			const { stdout, stderr } = await execAsync(curlCommand);
