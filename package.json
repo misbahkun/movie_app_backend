@@ -1,8 +1,8 @@
 {
 	"name": "movie-app-backend",
 	"version": "1.0.1",
-	"description": "",
-	"main": "backend/server.js",
+	"description": "RESFFUL API MOVIE TMDB",
+	"main": "src/server.js",
 	"scripts": {
 		"dev": "nodemon src/server.js",
 		"prod": "NODE_ENV=production node src/server.js",
@@ -25,6 +25,7 @@
 		"tailwindcss": "^4.1.11"
 	},
 	"devDependencies": {
+		"@flydotio/dockerfile": "^0.7.10",
 		"@shelf/jest-mongodb": "^5.2.2",
 		"jest": "^30.0.5",
 		"nodemon": "^3.1.4",
