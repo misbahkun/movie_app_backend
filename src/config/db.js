@@ -18,9 +18,11 @@ export const connectDB = async () => {
 			throw new Error('MongoDB URI is not defined');
 		}
 
-		console.log('Connecting to MongoDB URI:', uri);
 		const conn = await mongoose.connect(uri, clientOptions);
 
+		if (ENV_VARS.NODE_ENV === 'development-proxy' || ENV_VARS.NODE_ENV === 'development') {
+			console.log('Connecting to MongoDB URI:', uri);
+		}
 		console.log('MongoDB connected: ' + conn.connection.host);
 	} catch (error) {
 		console.error('Error connecting to MongoDB: ' + error.message);
